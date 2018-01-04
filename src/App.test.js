@@ -26,14 +26,18 @@ describe('App', () => {
 
 describe('Search', () => {
 
+  const props = {
+    onSubmit: () => {},
+  };
+
   it('renders without crashing', () => {
     const div = document.createElement('div');
-    ReactDOM.render(<Search>Search</Search>, div);
+    ReactDOM.render(<Search { ...props }>Search</Search>, div);
   });
 
   test('has a valid snapshot', () => {
     const component = renderer.create(
-      <Search>Search</Search>
+      <Search { ...props }>Search</Search>
     );
     let tree = component.toJSON();
     expect(tree).toMatchSnapshot();
@@ -45,12 +49,12 @@ describe('Button', () => {
 
   it('renders without crashing', () => {
     const div = document.createElement('div');
-    ReactDOM.render(<Button>Give Me More</Button>, div);
+    ReactDOM.render(<Button onClick={() => {}}>Give Me More</Button>, div);
   });
 
   test('has a valid snapshot', () => {
     const component = renderer.create(
-      <Button>Give Me More</Button>
+      <Button onClick={() => {}}>Give Me More</Button>
     );
     let tree = component.toJSON();
     expect(tree).toMatchSnapshot();
@@ -58,7 +62,7 @@ describe('Button', () => {
 
   it('renders children when passed in', () => {
     const component = shallow(
-      <Button>Give Me More</Button>
+      <Button onClick={() => {}}>Give Me More</Button>
     );
     expect(component.contains('Give Me More')).toBe(true);
   });
@@ -72,6 +76,7 @@ describe('Table', () => {
       { title: '1', author: '1', num_comments: 1, points: 2, objectID: 'y' },
       { title: '2', author: '2', num_comments: 1, points: 2, objectID: 'z' },
     ],
+    onDismiss: () => {},
   };
 
   it('renders without crashing', () => {
