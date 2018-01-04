@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
+import fetch from 'isomorphic-fetch';
 
 const DEFAULT_QUERY = 'redux';
 const DEFAULT_HPP = '100';
@@ -196,3 +197,9 @@ const Button = ({ onClick, className = '', children }) =>
   </button>
 
 export default App;
+
+export {
+  Button,
+  Search,
+  Table,
+};
