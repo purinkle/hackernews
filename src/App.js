@@ -7,9 +7,6 @@ const PATH_BASE = 'https://hn.algolia.com/api/v1';
 const PATH_SEARCH = '/search';
 const PARAM_SEARCH = 'query=';
 
-const isSearched = searchTerm => item =>
-  item.title.toLowerCase().includes(searchTerm.toLowerCase());
-
 class App extends Component {
   constructor(props) {
     super(props);
@@ -23,6 +20,7 @@ class App extends Component {
     this.fetchSearchTopStories = this.fetchSearchTopStories.bind(this);
     this.onDismiss = this.onDismiss.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
+    this.onSearchSubmit = this.onSearchSubmit.bind(this);
   }
 
   setSearchTopStories(result) {
@@ -53,6 +51,12 @@ class App extends Component {
     this.setState({ searchTerm: event.target.value });
   }
 
+  onSearchSubmit(event) {
+    const { searchTerm } = this.state;
+    this.fetchSearchTopStories(searchTerm);
+    event.preventDefault();
+  }
+
   render() {
     const { searchTerm, result } = this.state;
 
@@ -62,6 +66,7 @@ class App extends Component {
           <Search
             value={searchTerm}
             onChange={this.onSearchChange}
+            onSubmit={this.onSearchSubmit}
           >
             Search
           </Search>
@@ -69,7 +74,6 @@ class App extends Component {
         { result &&
           <Table
             list={result.hits}
-            pattern={searchTerm}
             onDismiss={this.onDismiss}
           />
         }
@@ -78,18 +82,26 @@ class App extends Component {
   }
 }
 
-const Search = ({ value, onChange, children }) =>
-  <form>
+const Search = ({
+  value,
+  onChange,
+  onSubmit,
+  children
+}) =>
+  <form onSubmit={onSubmit}>
     {children} <input
       type="text"
       value={value}
       onChange={onChange}
     />
+    <button type="submit">
+      {children}
+    </button>
   </form>
 
-const Table = ({ list, pattern, onDismiss }) =>
+const Table = ({ list, onDismiss }) =>
   <div className="table">
-    {list.filter(isSearched(pattern)).map(item =>
+    {list.map(item =>
       <div key={item.objectID} className="table-row">
         <span style={{ width: '40%' }}>
           <a href={item.url}>{item.title}</a>
