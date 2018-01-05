@@ -22,6 +22,27 @@ const SORTS = {
   POINTS: list => sortBy(list, 'points').reverse(),
 };
 
+const updateSearchTopStoriesState = (hits, page) => (prevState) => {
+  const { searchKey, results } = prevState;
+
+  const oldHits = results && results[searchKey]
+    ? results[searchKey].hits
+    : [];
+
+  const updatedHits = [
+    ...oldHits,
+    ...hits
+  ];
+
+  return {
+    results: {
+      ...results,
+      [searchKey]: { hits: updatedHits, page }
+    },
+    isLoading: false,
+  };
+};
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -48,24 +69,7 @@ class App extends Component {
 
   setSearchTopStories(result) {
     const { hits, page } = result;
-    const { searchKey, results } = this.state;
-
-    const oldHits = results && results[searchKey]
-      ? results[searchKey].hits
-      : [];
-
-    const updatedHits = [
-      ...oldHits,
-      ...hits
-    ];
-
-    this.setState({
-      results: {
-        ...results,
-        [searchKey]: { hits: updatedHits, page }
-      },
-      isLoading: false,
-    });
+    this.setState(updateSearchTopStoriesState(hits, page));
   }
 
   fetchSearchTopStories(searchTerm, page = 0) {
@@ -79,7 +83,9 @@ class App extends Component {
 
   componentDidMount() {
     const { searchTerm } = this.state;
-    this.setState({ searchKey: searchTerm });
+    this.setState(prevState => {
+      return { searchKey: searchTerm }
+    });
     this.fetchSearchTopStories(searchTerm);
   }
 
@@ -90,10 +96,12 @@ class App extends Component {
     const isNotId = item => item.objectID !== id;
     const updatedHits = hits.filter(isNotId);
 
-    this.setState({
-      results: {
-        ...results,
-        [searchKey]: { hits: updatedHits, page }
+    this.setState(prevState => {
+      return {
+        results: {
+          ...results,
+          [searchKey]: { hits: updatedHits, page }
+        }
       }
     });
   }
@@ -104,7 +112,9 @@ class App extends Component {
 
   onSearchSubmit(event) {
     const { searchTerm } = this.state;
-    this.setState({ searchKey: searchTerm });
+    this.setState(prevState => {
+      return { searchKey: searchTerm }
+    });
 
     if (this.needsToSearchTopStories(searchTerm)) {
       this.fetchSearchTopStories(searchTerm);
@@ -208,7 +218,9 @@ class Table extends Component {
 
   onSort(sortKey) {
     const isSortReverse = this.state.sortKey === sortKey && !this.state.isSortReverse;
-    this.setState({ sortKey, isSortReverse });
+    this.setState(prevState => {
+      return { sortKey, isSortReverse };
+    });
   }
 
   render() {
